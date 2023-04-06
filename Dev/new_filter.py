@@ -28,6 +28,27 @@ grayscale_image_simple = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
 grayscale_image = cv2.cvtColor(grayscale_image_simple, cv2.COLOR_GRAY2BGR)
 
 
+
+### turn image array into 1dd sorted array
+flat = grayscale_image_simple.flatten()
+flat = np.sort(flat)
+print(len(flat))
+
+sorted_length = len(flat)
+
+### make bins for the n number of bins
+bins = []
+n = 3
+for i in range(0,n):
+    percentile = flat[int(i*sorted_length/n)]
+    bins.append(percentile)
+
+### find average pixel represenation for each bin
+first_bin_value = flat[(flat > bins[0]) & (flat < bins[1])]
+print(first_bin_value.mean())
+
+
+
 height, width, channels = original_image.shape[:3]
 
 cv2.namedWindow("Original Image", cv2.WINDOW_NORMAL)
@@ -56,7 +77,7 @@ while key_pressed != 27:
     
     
     
-    grayscale_break = 100
+    grayscale_break = grayscale_image.mean()
     
     ### Set grayscale breaks
     min_grayscale_for_red = [0,0,0]
