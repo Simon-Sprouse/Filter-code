@@ -47,7 +47,8 @@ for i in range(0,n):
 first_bin_value = flat[(flat > bins[0]) & (flat < bins[1])]
 print(first_bin_value.mean())
 
-
+second_bin_value = flat[(flat > bins[1]) & (flat < bins[2])]
+print(second_bin_value.mean())
 
 height, width, channels = original_image.shape[:3]
 
@@ -77,7 +78,7 @@ while key_pressed != 27:
     
     
     
-    grayscale_break = grayscale_image.mean()
+    grayscale_break = 122
     
     ### Set grayscale breaks
     min_grayscale_for_red = [0,0,0]
@@ -106,8 +107,8 @@ while key_pressed != 27:
     red_paper = np.zeros((height,width,channels), np.uint8)
     yellow_paper = np.zeros((height,width,channels), np.uint8)
     
-    red_paper[0:height,0:width, 0:channels] = (0,0,255)
-    yellow_paper[0:height,0:width, 0:channels] = (0,255,255)
+    red_paper[0:height,0:width, 0:channels] = (72, 72, 72)
+    yellow_paper[0:height,0:width, 0:channels] = (161, 161, 161)
     
     
     
