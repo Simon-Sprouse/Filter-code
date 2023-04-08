@@ -30,7 +30,7 @@ grayscale_image = cv2.cvtColor(grayscale_image_simple, cv2.COLOR_GRAY2BGR)
 height, width, channels = original_image.shape[:3]
 
 
-
+number_of_splits = 16
 
 def makeBins(n):
     
@@ -59,7 +59,7 @@ def makeBins(n):
     return bins, bin_values
     
 
-breaks, values = makeBins(2)
+breaks, values = makeBins(number_of_splits)
 
 
 '''
@@ -135,7 +135,7 @@ def makeBinsList(n):
     return bin_list
     
 
-bins_list = makeBinsList(2)
+bins_list = makeBinsList(number_of_splits)
 
 for x, i in enumerate(bins_list):
     print(x)
@@ -184,10 +184,17 @@ while key_pressed != 27:
     key_pressed = cv2.waitKey(10)
     
     
+
+    customized_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[0].color_image)
+    
+    n = number_of_splits
+    for i in range(1,n):
+        customized_image = cv2.bitwise_or(customized_image, bins_list[i].color_image)
+        
     
 
 
-    customized_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[1].color_image)
+
 
     showVis(original_image, grayscale_image, customized_image, customized_image)
     
