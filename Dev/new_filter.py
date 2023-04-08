@@ -27,7 +27,7 @@ original_image = cv2.imread(path, 1)
 grayscale_image_simple = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
 grayscale_image = cv2.cvtColor(grayscale_image_simple, cv2.COLOR_GRAY2BGR)
 
-
+height, width, channels = original_image.shape[:3]
 
 
 
@@ -73,14 +73,14 @@ def to3Channel(breaks, values):
     breaks_3channel = [[x,x,x] for x in breaks]
     values_3channel = [[x,x,x] for x in values]
     
-    return breaks_3channel
+    return breaks_3channel, values_3channel
 
-breaks_3channel = to3Channel(breaks, values)
+breaks_3channel, values_3channel = to3Channel(breaks, values)
 
 '''
 n = 3
 breaks: [0,0,0],[122,122,122],[179,179,179]
-values: 72, 160, 199
+values: 7[72,72,72],[160,160,160],[199,199,199]
 '''
 
 
@@ -94,6 +94,7 @@ class bin:
     def __init__(self, lower, upper):
         self.lower = lower
         self.upper = upper
+        self.color = [0,0,0] ### default to black
     
     def printBounds(self):
         print(self.lower, ",", self.upper)
@@ -108,8 +109,14 @@ class bin:
         
         self.mask = cv2.inRange(grayscale_image,self.lower, self.upper)
 
-    
-
+    def reColor(self):
+        color_paper = np.zeros((height,width,channels), np.uint8)
+        
+        color_paper[0:height,0:width, 0:channels] = self.color
+        
+        self.color_image = cv2.bitwise_or(color_paper, color_paper,
+                                            mask = self.mask)
+        
 
 
 break_list = breaks_3channel
@@ -130,9 +137,18 @@ def makeBinsList(n):
 
 bins_list = makeBinsList(2)
 
+for x, i in enumerate(bins_list):
+    print(x)
+    i.setColor(values_3channel[x])
+
 
 for i in bins_list:
     i.createMask()
+    
+
+for i in bins_list:
+    i.reColor()
+
 
 
 for i in bins_list:
@@ -144,7 +160,7 @@ for i in bins_list:
 
 
 
-height, width, channels = original_image.shape[:3]
+
 
 cv2.namedWindow("Original Image", cv2.WINDOW_NORMAL)
 
