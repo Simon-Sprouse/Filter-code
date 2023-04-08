@@ -186,65 +186,10 @@ while key_pressed != 27:
     
     
 
-    
-    
- 
-    
-    
 
-    ### Set grayscale breaks
-    min_grayscale_for_red  = break_list[0]
-    
-    max_grayscale_for_red = break_list[1]
-    min_grayscale_for_yellow =  [x+1 for x in break_list[1]]
-    
-    max_grayscale_for_yellow = [255,255,255]
-    
-    
-    
-    
-    
-    for i in range(0,2):
-        2
-    
-    
-    
-    ### Create numpy arrays of grayscale breaks
-    min_grayscale_for_red = np.array(min_grayscale_for_red, dtype = "uint8")
-    max_grayscale_for_red = np.array(max_grayscale_for_red, dtype = "uint8")
-    min_grayscale_for_yellow = np.array(min_grayscale_for_yellow,
-                                           dtype = "uint8")
-    max_grayscale_for_yellow = np.array(max_grayscale_for_yellow,
-                                           dtype = "uint8")
-    
-    
-    
-    ### Create masks for ranges
-    block_all_but_the_red_parts = cv2.inRange(grayscale_image,
-                                              min_grayscale_for_red,
-                                              max_grayscale_for_red)
-    block_all_but_the_yellow_parts = cv2.inRange(grayscale_image,
-                                                 min_grayscale_for_yellow,
-                                                 max_grayscale_for_yellow)
-    
-    
-    
-    red_paper = np.zeros((height,width,channels), np.uint8)
-    yellow_paper = np.zeros((height,width,channels), np.uint8)
-    
-    red_paper[0:height,0:width, 0:channels] = (97,97,97)
-    yellow_paper[0:height,0:width, 0:channels] = (190,190,190)
-    
-    
-    
-    red_parts_of_image = cv2.bitwise_or(red_paper, red_paper,
-                                        mask = block_all_but_the_red_parts)
-    yellow_parts_of_image = cv2.bitwise_or(yellow_paper, yellow_paper,
-                                           mask = block_all_but_the_yellow_parts)
+    customized_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[1].color_image)
 
-    customized_image = cv2.bitwise_or(red_parts_of_image, yellow_parts_of_image)
-
-    showVis(original_image, grayscale_image, customized_image, yellow_paper)
+    showVis(original_image, grayscale_image, customized_image, customized_image)
     
     
     
