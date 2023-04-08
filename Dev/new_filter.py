@@ -29,26 +29,60 @@ grayscale_image = cv2.cvtColor(grayscale_image_simple, cv2.COLOR_GRAY2BGR)
 
 
 
-### turn image array into 1dd sorted array
-flat = grayscale_image_simple.flatten()
-flat = np.sort(flat)
-print(len(flat))
 
-sorted_length = len(flat)
 
-### make bins for the n number of bins
-bins = []
+
+def makeBins(n):
+    
+    ### turn image array into 1dd sorted array
+    flat = grayscale_image_simple.flatten()
+    flat = np.sort(flat)
+    print(len(flat))
+
+    sorted_length = len(flat)
+
+    
+    bins = []
+    for i in range(0,n):
+        percentile = flat[int(i*sorted_length/n)]
+        bins.append(percentile)
+
+    bin_values = []
+    for i in range(0,n-1):
+        bin_value = flat[[(flat > bins[i]) & (flat < bins[i+1])]].mean()
+        bin_values.append(bin_value)
+
+    bin_value = flat[(flat > bins[n-1])].mean()
+    bin_values.append(bin_value)
+    
+    
+    return bins, bin_values
+    
+
+breaks, values = makeBins(5)
+
+
+'''
 n = 3
-for i in range(0,n):
-    percentile = flat[int(i*sorted_length/n)]
-    bins.append(percentile)
+breaks: 0, 122, 179
+values: 72, 160, 199
+'''
 
-### find average pixel represenation for each bin
-first_bin_value = flat[(flat > bins[0]) & (flat < bins[1])]
-print(first_bin_value.mean())
+def to3Channel(breaks, values):
+    
+    breaks_3channel = [[x,x,x] for x in breaks]
+    values_3channel = [[x,x,x] for x in values]
+    
+    return breaks_3channel
 
-second_bin_value = flat[(flat > bins[1]) & (flat < bins[2])]
-print(second_bin_value.mean())
+breaks_3channel = to3Channel(breaks, values)
+
+'''
+n = 3
+breaks: [0,0,0],[122,122,122],[179,179,179]
+values: 72, 160, 199
+'''
+
 
 height, width, channels = original_image.shape[:3]
 
@@ -70,6 +104,51 @@ def showVis(top_left, top_right, bottom_left, bottom_right):
     cv2.imshow('Original Image', vis)
     
     
+    
+    
+    
+class bin:
+    def __init__(self, lower, upper):
+        self.lower = lower
+        self.upper = upper
+    
+    def printBounds(self):
+        print(x for x in self.lower)
+        print(y for y in self.upper)
+
+
+
+
+
+
+break_list = breaks_3channel
+
+
+bin_list = []
+bin_list.append(bin(break_list[0],break_list[1]))
+
+n = 5
+for i in range(1,n-1):
+    bin_list.append(bin([x+1 for x in break_list[i]],break_list[i+1]))
+
+bin_list.append(bin(break_list[n-1],[255,255,255]))
+
+for i in bin_list:
+    i.printBounds()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 key_pressed = 69
@@ -78,13 +157,29 @@ while key_pressed != 27:
     
     
     
-    grayscale_break = 122
+
     
+    
+ 
+    
+    
+
     ### Set grayscale breaks
-    min_grayscale_for_red = [0,0,0]
-    max_grayscale_for_red = [grayscale_break, grayscale_break, grayscale_break]
-    min_grayscale_for_yellow =  [grayscale_break + 1, grayscale_break + 1, grayscale_break + 1]
-    max_grayscale_for_yellow = [255, 255, 255]
+    min_grayscale_for_red  = break_list[0]
+    
+    max_grayscale_for_red = break_list[1]
+    min_grayscale_for_yellow =  [x+1 for x in break_list[1]]
+    
+    max_grayscale_for_yellow = break_list[2]
+    
+    
+    
+    
+    
+    for i in range(0,2):
+        2
+    
+    
     
     ### Create numpy arrays of grayscale breaks
     min_grayscale_for_red = np.array(min_grayscale_for_red, dtype = "uint8")
@@ -107,8 +202,8 @@ while key_pressed != 27:
     red_paper = np.zeros((height,width,channels), np.uint8)
     yellow_paper = np.zeros((height,width,channels), np.uint8)
     
-    red_paper[0:height,0:width, 0:channels] = (72, 72, 72)
-    yellow_paper[0:height,0:width, 0:channels] = (161, 161, 161)
+    red_paper[0:height,0:width, 0:channels] = (97,97,97)
+    yellow_paper[0:height,0:width, 0:channels] = (190,190,190)
     
     
     
