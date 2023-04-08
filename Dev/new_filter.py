@@ -59,7 +59,7 @@ def makeBins(n):
     return bins, bin_values
     
 
-breaks, values = makeBins(5)
+breaks, values = makeBins(2)
 
 
 '''
@@ -84,6 +84,66 @@ values: 72, 160, 199
 '''
 
 
+
+    
+    
+    
+    
+    
+class bin:
+    def __init__(self, lower, upper):
+        self.lower = lower
+        self.upper = upper
+    
+    def printBounds(self):
+        print(self.lower, ",", self.upper)
+
+    def setColor(self, color):
+        self.color = color
+        
+    def createMask(self):
+        
+        self.lower = np.array(self.lower, dtype = "uint8")
+        self.upper = np.array(self.upper, dtype = "uint8")
+        
+        self.mask = cv2.inRange(grayscale_image,self.lower, self.upper)
+
+    
+
+
+
+break_list = breaks_3channel
+
+def makeBinsList(n):
+
+    bin_list = []
+    bin_list.append(bin(break_list[0],break_list[1]))
+
+    for i in range(1,n-1):
+        bin_list.append(bin([x+1 for x in break_list[i]],break_list[i+1]))
+    
+    bin_list.append(bin(break_list[n-1],[255,255,255]))
+    
+        
+    return bin_list
+    
+
+bins_list = makeBinsList(2)
+
+
+for i in bins_list:
+    i.createMask()
+
+
+for i in bins_list:
+    i.printBounds()
+    
+
+
+
+
+
+
 height, width, channels = original_image.shape[:3]
 
 cv2.namedWindow("Original Image", cv2.WINDOW_NORMAL)
@@ -102,54 +162,6 @@ def showVis(top_left, top_right, bottom_left, bottom_right):
     vis[height:2*height, width:2*width, :channels] = bottom_right
 
     cv2.imshow('Original Image', vis)
-    
-    
-    
-    
-    
-class bin:
-    def __init__(self, lower, upper):
-        self.lower = lower
-        self.upper = upper
-    
-    def printBounds(self):
-        print(x for x in self.lower)
-        print(y for y in self.upper)
-
-
-
-
-
-
-break_list = breaks_3channel
-
-
-bin_list = []
-bin_list.append(bin(break_list[0],break_list[1]))
-
-n = 5
-for i in range(1,n-1):
-    bin_list.append(bin([x+1 for x in break_list[i]],break_list[i+1]))
-
-bin_list.append(bin(break_list[n-1],[255,255,255]))
-
-for i in bin_list:
-    i.printBounds()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 key_pressed = 69
 while key_pressed != 27:
@@ -170,7 +182,7 @@ while key_pressed != 27:
     max_grayscale_for_red = break_list[1]
     min_grayscale_for_yellow =  [x+1 for x in break_list[1]]
     
-    max_grayscale_for_yellow = break_list[2]
+    max_grayscale_for_yellow = [255,255,255]
     
     
     
@@ -188,6 +200,8 @@ while key_pressed != 27:
                                            dtype = "uint8")
     max_grayscale_for_yellow = np.array(max_grayscale_for_yellow,
                                            dtype = "uint8")
+    
+    
     
     ### Create masks for ranges
     block_all_but_the_red_parts = cv2.inRange(grayscale_image,
