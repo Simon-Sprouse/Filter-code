@@ -7,7 +7,7 @@ Created on Mon Apr 24 15:26:51 2023
 """
 
 import colorsys
-
+from colr import color
 
 def bgrToHsv(color):
     
@@ -15,7 +15,10 @@ def bgrToHsv(color):
     g = int(color[1]/255)
     r = int(color[2]/255)
     
-    return colorsys.rgb_to_hsv(r, g, b)
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    
+    
+    return [h, s, v]
     
     
 
@@ -32,6 +35,30 @@ def hsvToBgr(color):
     
     
     return [b, g, r]
+
+
+start = [0,0,255] #red
+
+hsv = bgrToHsv(start)
+
+
+hsv[0] += 0.2
+
+end = hsvToBgr(hsv)
+
+
     
 
+
+for i in range(11):
+    
+    hsv = bgrToHsv(start)
+
+
+    hsv[0] += 0.1*i
+
+    end = hsvToBgr(hsv)
+    
+    
+    print(color("Hello", fore=[end[2], end[1], end[0]]))
     
