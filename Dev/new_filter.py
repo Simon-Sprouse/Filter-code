@@ -12,6 +12,12 @@ import os.path
 import numpy as np
 import cv2
 import time
+import random
+from convertspace import bgrToHsv, hsvToBgr
+
+red = [0,0,255]
+print(bgrToHsv(red))
+
 
 filename_valid = False
 
@@ -147,13 +153,31 @@ def showVis(top_left, top_right, bottom_left, bottom_right):
 
 
 
-def makeColorList(n):
+def makeColorList(n, method = "grey"):
     
-    color_list = []
-    for i in range(n):
-        color_list.append([255,255,255])
+    if method == "grey":
+        color_list = []
+        for i in range(n):
+            r = random.randint(0,255)
+            r = int(i*255/n)
+            
+            color_list.append([r, r, r])
+        
+        return color_list
     
-    return color_list
+    if method == "rainbow": 
+        
+        
+        
+        
+        return []
+        
+    
+    
+    
+    else:
+        
+        return []
 
 
 
@@ -170,9 +194,11 @@ while key_pressed != 27:
     breaks_3channel, values_3channel = to3Channel(breaks, values)
     bins_list = makeBinsList(number_of_splits, breaks_3channel)
     
+    grey_list = makeColorList(number_of_splits) 
+    
     
     for x, i in enumerate(bins_list):
-        i.setColor([values_3channel[x][0], values_3channel[x][0], values_3channel[x][0]])
+        i.setColor(grey_list[x])
     
     for i in bins_list:
         i.createMask()
@@ -184,8 +210,7 @@ while key_pressed != 27:
     # for i in bins_list:
     #     i.printBounds()
         
-    
-    
+
 
     breaks_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[0].color_image)
 
@@ -194,14 +219,17 @@ while key_pressed != 27:
     for i in range(1,n):
         breaks_image = cv2.bitwise_or(breaks_image, bins_list[i].color_image)
         
+        
+        
+        
+        
+        
+        
+    color_list = makeColorList(number_of_splits) 
+        
       
-    
-    
-    
-    
-    
     for x, i in enumerate(bins_list):
-        i.setColor([values_3channel[x][0], 255-values_3channel[x][0], 100])
+        i.setColor(color_list[x])
     
     for i in bins_list:
         i.createMask()
@@ -209,12 +237,7 @@ while key_pressed != 27:
     for i in bins_list:
         i.reColor()
     
-    
-    # for i in bins_list:
-    #     i.printBounds()
-        
-    
-    
+
 
     customized_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[0].color_image)
 
