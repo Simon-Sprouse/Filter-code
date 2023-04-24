@@ -22,7 +22,12 @@ filename_valid = False
     
 ### Todo: Remove
 path = "img.jpeg"
+
+
     
+
+
+### Read in the image from the file path ### 
 original_image = cv2.imread(path, 1)
 grayscale_image_simple = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
 grayscale_image = cv2.cvtColor(grayscale_image_simple, cv2.COLOR_GRAY2BGR)
@@ -30,28 +35,27 @@ grayscale_image = cv2.cvtColor(grayscale_image_simple, cv2.COLOR_GRAY2BGR)
 height, width, channels = original_image.shape[:3]
 
 
-number_of_splits = 16
+
 
 def makeBins(n):
+    ''' Finds pixel values which divide array into n equal subarrays '''
     
-    ### turn image array into 1dd sorted array
+    ### turn image array into 1d sorted array ###
     flat = grayscale_image_simple.flatten()
     flat = np.sort(flat)
-    print(len(flat))
-
     sorted_length = len(flat)
 
-    
+    ### bins here means breaks in pixle values ###
     bins = []
     for i in range(0,n):
         percentile = flat[int(i*sorted_length/n)]
         bins.append(percentile)
 
+    ### find the represenative color for each bin ###
     bin_values = []
     for i in range(0,n-1):
         bin_value = flat[[(flat > bins[i]) & (flat < bins[i+1])]].mean()
         bin_values.append(bin_value)
-
     bin_value = flat[(flat > bins[n-1])].mean()
     bin_values.append(bin_value)
     
@@ -59,42 +63,27 @@ def makeBins(n):
     return bins, bin_values
     
 
-breaks, values = makeBins(number_of_splits)
-
-
-'''
-n = 3
-breaks: 0, 122, 179
-values: 72, 160, 199
-'''
-
 def to3Channel(breaks, values):
+    ''' Takes a 1 channel grayscale value and converts to 3 channel BGR value '''
     
     breaks_3channel = [[x,x,x] for x in breaks]
     values_3channel = [[x,x,x] for x in values]
     
-    return breaks_3channel, values_3channel
+    return breaks_3channel, values_3channel 
 
-breaks_3channel, values_3channel = to3Channel(breaks, values)
 
 '''
-n = 3
-breaks: [0,0,0],[122,122,122],[179,179,179]
-values: 7[72,72,72],[160,160,160],[199,199,199]
+This bin class represents the actual bin of pixels
+self.lower is the lower bound for pixel values
+self.upper is the upper bound for pixel values
+self.color is the color which will be used to represent the bin
 '''
-
-
-
-    
-    
-    
-    
-    
 class bin:
+    
     def __init__(self, lower, upper):
         self.lower = lower
         self.upper = upper
-        self.color = [0,0,0] ### default to black
+        self.color = [155,0,0] ### default to blue
     
     def printBounds(self):
         print(self.lower, ",", self.upper)
@@ -103,63 +92,40 @@ class bin:
         self.color = color
         
     def createMask(self):
+        ''' Creates a cv2 mask for the bin '''
         
+        ### Cast into type uint8 ###
         self.lower = np.array(self.lower, dtype = "uint8")
         self.upper = np.array(self.upper, dtype = "uint8")
         
+        ### Create cv2 mask ###
         self.mask = cv2.inRange(grayscale_image,self.lower, self.upper)
 
     def reColor(self):
-        color_paper = np.zeros((height,width,channels), np.uint8)
+        ''' Recolor the mask to self.color '''
         
-        color_paper[0:height,0:width, 0:channels] = self.color
-        
+        color_paper = np.zeros((height,width,channels), np.uint8) ### make size
+        color_paper[0:height,0:width, 0:channels] = self.color    ### recolor
         self.color_image = cv2.bitwise_or(color_paper, color_paper,
                                             mask = self.mask)
         
 
-
-break_list = breaks_3channel
-
-def makeBinsList(n):
-
+def makeBinsList(n, break_list):
+    ''' Makes a list of bin objects '''
+    
     bin_list = []
     bin_list.append(bin(break_list[0],break_list[1]))
-
     for i in range(1,n-1):
         bin_list.append(bin([x+1 for x in break_list[i]],break_list[i+1]))
-    
     bin_list.append(bin(break_list[n-1],[255,255,255]))
     
         
     return bin_list
     
 
-bins_list = makeBinsList(number_of_splits)
-
-for x, i in enumerate(bins_list):
-    print(x)
-    i.setColor(values_3channel[x])
 
 
-for i in bins_list:
-    i.createMask()
     
-
-for i in bins_list:
-    i.reColor()
-
-
-
-for i in bins_list:
-    i.printBounds()
-    
-
-
-
-
-
-
 
 
 cv2.namedWindow("Original Image", cv2.WINDOW_NORMAL)
@@ -179,14 +145,79 @@ def showVis(top_left, top_right, bottom_left, bottom_right):
 
     cv2.imshow('Original Image', vis)
 
+
+
+def makeColorList(n):
+    
+    color_list = []
+    for i in range(n):
+        color_list.append([255,255,255])
+    
+    return color_list
+
+
+
+
+i = 0
+
 key_pressed = 69
 while key_pressed != 27:
-    key_pressed = cv2.waitKey(10)
+    key_pressed = cv2.waitKey(3000)
+    
+    number_of_splits = 2 + i
+    i += 1
+    breaks, values = makeBins(number_of_splits)
+    breaks_3channel, values_3channel = to3Channel(breaks, values)
+    bins_list = makeBinsList(number_of_splits, breaks_3channel)
+    
+    
+    for x, i in enumerate(bins_list):
+        i.setColor([values_3channel[x][0], values_3channel[x][0], values_3channel[x][0]])
+    
+    for i in bins_list:
+        i.createMask()
+        
+    for i in bins_list:
+        i.reColor()
+    
+    
+    # for i in bins_list:
+    #     i.printBounds()
+        
+    
+    
+
+    breaks_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[0].color_image)
+
+
+    n = number_of_splits
+    for i in range(1,n):
+        breaks_image = cv2.bitwise_or(breaks_image, bins_list[i].color_image)
+        
+      
+    
+    
+    
+    
+    
+    for x, i in enumerate(bins_list):
+        i.setColor([values_3channel[x][0], 255-values_3channel[x][0], 100])
+    
+    for i in bins_list:
+        i.createMask()
+        
+    for i in bins_list:
+        i.reColor()
+    
+    
+    # for i in bins_list:
+    #     i.printBounds()
+        
     
     
 
     customized_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[0].color_image)
-    
+
     n = number_of_splits
     for i in range(1,n):
         customized_image = cv2.bitwise_or(customized_image, bins_list[i].color_image)
@@ -195,14 +226,10 @@ while key_pressed != 27:
 
 
 
-
-    showVis(original_image, grayscale_image, customized_image, customized_image)
+    showVis(original_image, grayscale_image, breaks_image, customized_image)
     
     
     
 cv2.destroyAllWindows()
 cv2.waitKey(10)
-
-
-
 
