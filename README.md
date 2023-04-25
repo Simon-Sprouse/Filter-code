@@ -21,3 +21,10 @@ The colors chosen here represent the hsv spectrum divided into n parts based on 
 # The image can be divided into n sub arrays:
 Here is an exmaple with 9 sub-divisions
 ![Final Img](Images/Example6.jpg)
+
+# The blend function is accomplished in HSV color space
+![Final Img](Images/Example10.png)
+
+# Here are some final results!
+![Final Img](Images/Example8.jpg)
+![Final Img](Images/Example9.jpg)
