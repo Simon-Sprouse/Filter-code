@@ -16,8 +16,8 @@ The program will divide the grayscale image into n equal parts based on brightne
 
 # Next, each sub array is mapped to a new color:
 The colors chosen here represent the hsv spectrum divided into n parts based on hue, more on this later.
-![Final Img](Images/Examle5.jpg)
+![Final Img](Images/Example5.jpg)
 
 # The image can be divided into n sub arrays:
 Here is an exmaple with 9 sub-divisions
-![Final Img](Images/Examle6.jpg)
+![Final Img](Images/Example6.jpg)
