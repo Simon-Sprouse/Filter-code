@@ -13,10 +13,10 @@ import numpy as np
 import cv2
 import time
 import random
-from convertspace import bgrToHsv, hsvToBgr
+from convertspace import rgbToHsv, hsvToRgb
 
 red = [0,0,255]
-print(bgrToHsv(red))
+print(rgbToHsv(red))
 
 
 filename_valid = False
@@ -27,7 +27,7 @@ filename_valid = False
 #         filename_valid = True
     
 ### Todo: Remove
-path = "img.jpeg"
+path = "img7.jpeg"
 
 
     
@@ -155,8 +155,10 @@ def showVis(top_left, top_right, bottom_left, bottom_right):
 
 def makeColorList(n, method = "grey"):
     
+    color_list = []
+    
     if method == "grey":
-        color_list = []
+        
         for i in range(n):
             r = random.randint(0,255)
             r = int(i*255/n)
@@ -167,10 +169,37 @@ def makeColorList(n, method = "grey"):
     
     if method == "rainbow": 
         
+        inc = (0.4/(n-1))
+        for i in range(n):
+            
+            hsv = rgbToHsv([255,0,255]) # red
+
+            hsv[0] += inc*i
+
+            end = hsvToRgb(hsv)
+            
+            
+            color_list.append([end[2], end[1], end[0]])
+            
+        return color_list
+    
+    if method == "random":
         
-        
-        
-        return []
+        inc = (0.2/(n-1))
+        for i in range(n):
+            
+            hsv = rgbToHsv([255,0,0]) # red
+
+            hsv[0] += inc*i
+
+            end = hsvToRgb(hsv)
+            
+            
+            color_list.append([end[2], end[1], end[0]])
+            
+            random.shuffle(color_list)
+            
+        return color_list
         
     
     
@@ -225,7 +254,7 @@ while key_pressed != 27:
         
         
         
-    color_list = makeColorList(number_of_splits) 
+    color_list = makeColorList(number_of_splits, method="rainbow") 
         
       
     for x, i in enumerate(bins_list):
