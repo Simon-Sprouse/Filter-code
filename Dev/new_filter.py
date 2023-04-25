@@ -13,7 +13,7 @@ import numpy as np
 import cv2
 import time
 import random
-from convertspace import rgbToHsv, hsvToRgb
+from convertspace import rgbToHsv, hsvToRgb, blend, rgbToBgr
 
 red = [0,0,255]
 print(rgbToHsv(red))
@@ -27,7 +27,7 @@ filename_valid = False
 #         filename_valid = True
     
 ### Todo: Remove
-path = "img7.jpeg"
+path = "img8.jpeg"
 
 
     
@@ -131,10 +131,24 @@ def makeBinsList(n, break_list):
 
 
 
+
+
+
     
 
 
 cv2.namedWindow("Original Image", cv2.WINDOW_NORMAL)
+
+cv2.createTrackbar('Breakpoint', "Original Image", 0, 20, lambda x:None)
+
+
+
+
+
+
+
+
+
 
 
 # Todo make this more efficient
@@ -169,7 +183,7 @@ def makeColorList(n, method = "grey"):
     
     if method == "rainbow": 
         
-        inc = (0.4/(n-1))
+        inc = (1/(n))
         for i in range(n):
             
             hsv = rgbToHsv([255,0,255]) # red
@@ -201,9 +215,16 @@ def makeColorList(n, method = "grey"):
             
         return color_list
         
-    
-    
-    
+    if method == "blend":
+        
+        color2 = [40, 120, 60]
+        color1 = [30, 40, 70]
+        color_list = blend(color1, color2, n)
+        
+        color_list_bgr = rgbToBgr(color_list)
+        
+        return color_list_bgr
+        
     else:
         
         return []
@@ -215,9 +236,11 @@ i = 0
 
 key_pressed = 69
 while key_pressed != 27:
-    key_pressed = cv2.waitKey(3000)
+    key_pressed = cv2.waitKey(300)
     
-    number_of_splits = 2 + i
+    grayscale_break = cv2.getTrackbarPos('Breakpoint',"Original Image")
+    
+    number_of_splits = grayscale_break + 2
     i += 1
     breaks, values = makeBins(number_of_splits)
     breaks_3channel, values_3channel = to3Channel(breaks, values)

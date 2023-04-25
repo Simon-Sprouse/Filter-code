@@ -11,9 +11,11 @@ from colr import color
 
 def rgbToHsv(color):
     
-    r = int(color[0]/255)
-    g = int(color[1]/255)
-    b = int(color[2]/255)
+    r = float(color[0]/255)
+    g = float(color[1]/255)
+    b = float(color[2]/255)
+    
+    # print("rgb: ", r, g, b)
     
     h, s, v = colorsys.rgb_to_hsv(r, g, b)
     
@@ -40,10 +42,20 @@ def hsvToRgb(color):
 
 
 
+def rgbToBgr(arr):
+    for i in arr: 
+        temp = i[0]
+        i[0] = i[2]
+        i[2] = temp
+    return arr
+
+# color1 = [255, 0, 0]
+# color2 = [30, 40, 120]
 
 
-
-
+# print(rgbToHsv(color1))
+# print(rgbToHsv(color2))
+# print()
 
     
 # n = 11
@@ -69,15 +81,25 @@ def hsvToRgb(color):
     
 def blend(color1, color2, n): 
     
+    output_list = []
+    
     color1_hsv = rgbToHsv(color1)
     color2_hsv = rgbToHsv(color2)
-    print(color1_hsv, color2_hsv)
+    # print(color1_hsv, color2_hsv)
     
     hue_gap = color2_hsv[0] - color1_hsv[0]
-    print(hue_gap)
-    
     hue_inc = (hue_gap/(n-1))
-    print(hue_inc)
+    
+    sat_gap = color2_hsv[1] - color1_hsv[1]
+    sat_inc = (sat_gap/(n-1))
+    
+    val_gap = color2_hsv[2] - color1_hsv[2]
+    val_inc = (val_gap/(n-1))
+    
+    
+    # print("hue gap: ", hue_gap)
+    # print("sat gap: ", sat_gap)
+    # print("val gap: ", val_gap)
     
     for i in range(n):
         
@@ -88,15 +110,22 @@ def blend(color1, color2, n):
         
 
         start[0] += hue_inc*i
+        start[1] += sat_inc*i
+        start[2] += val_inc*i
+        
+        
 
         end = hsvToRgb(start)
         
         
-        print(color("Blend", fore=[end[0], end[1], end[2]]))
         
+        # print(color("Blend", fore=[end[0], end[1], end[2]]))
+        output_list.append(end)
         
-color1 = [255, 0, 0]
-color2 = [255, 255, 0]
+    return output_list
+        
+color2 = [40, 120, 60]
+color1 = [30, 40, 70]
 n = 11
 
-blend(color1, color2, n)
+arr = blend(color1, color2, n)
