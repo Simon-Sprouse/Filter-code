@@ -7,10 +7,17 @@ Credit: https://rare-gallery.com/120453-empire-state-building-skyscrapers-manhat
 ![First Image](Images/img9.jpeg)
 
 # The program then converts the image into a grayscale array:
+The original image was a 3d array to account for the RGB values of each pixel. Now the image is in 2d.
 ![Grayscale](Images/Example2.jpg)
 
-# Next the grayscale image is broken into 6 sub-images based on an adjustable filter:
+# Next the grayscale image is broken into sub arrays based breakpoint values:
+The program will divide the grayscale image into n equal parts based on brightness. The below example has been divided twice. 
 ![Grayscale2](Images/Example3.jpg)
 
-# Finally, each subimage gets mapped to a new color:
-![Final Img](Images/final_img.png)
+# Next, each sub array is mapped to a new color:
+The colors chosen here represent the hsv spectrum divided into n parts based on hue, more on this later.
+![Final Img](Images/Examle5.jpg)
+
+# The image can be divided into n sub arrays:
+Here is an exmaple with 9 sub-divisions
+![Final Img](Images/Examle6.jpg)
