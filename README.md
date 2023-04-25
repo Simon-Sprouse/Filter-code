@@ -1,7 +1,8 @@
 # Copmuter Vision Filtering Art
-This code splits an image by grayscale value and assigns colors to groups of values 
+This progam uses the OpenCV library computer vision tools to generate Pop Art! 
 
-# The program starts with an input image like this:
+# First, the user is prompted to enter an image:
+For purpose of demonstration, this readme will work with this image of the manhatten skyline. Credit: 
 ![First Image](Images/img9.jpeg)
 
 # The program then converts the image into a grayscale vector:
