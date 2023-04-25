@@ -7,10 +7,10 @@ Credit: https://rare-gallery.com/120453-empire-state-building-skyscrapers-manhat
 ![First Image](Images/img9.jpeg)
 
 # The program then converts the image into a grayscale array:
-![Grayscale](Images/Example2.png)
+![Grayscale](Images/Example2.jpg)
 
 # Next the grayscale image is broken into 6 sub-images based on an adjustable filter:
-![Grayscale2](Images/Example3.png)
+![Grayscale2](Images/Example3.jpg)
 
 # Finally, each subimage gets mapped to a new color:
 ![Final Img](Images/final_img.png)
