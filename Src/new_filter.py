@@ -11,25 +11,26 @@ Created on Wed Apr  5 16:27:12 2023
 import os.path
 import numpy as np
 import cv2
-import time
 import random
 from convertspace import rgbToHsv, hsvToRgb, blend, rgbToBgr
 
-red = [0,0,255]
-print(rgbToHsv(red))
 
-
+### Enter filename ###
 filename_valid = False
-
-# while filename_valid == False:
-#     path = input("Please enter a file name: ")
-#     if os.path.isfile(path) == True:
-#         filename_valid = True
+while filename_valid == False:
+    path = input("Please enter a file name: ")
+    if os.path.isfile(path) == True:
+        filename_valid = True
     
-### Todo: Remove
-path = "img9.jpeg"
 
-
+### Handle file save ###
+def saveFile(image_variable):
+    file_name = input("Name your image: ")
+    if ".png" not in file_name and ".jpg" not in file_name:
+        file_name += ".jpg"
+    cv2.imwrite(file_name, image_variable)
+    print(file_name, "has been saved")
+        
     
 
 
@@ -37,9 +38,7 @@ path = "img9.jpeg"
 original_image = cv2.imread(path, 1)
 grayscale_image_simple = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
 grayscale_image = cv2.cvtColor(grayscale_image_simple, cv2.COLOR_GRAY2BGR)
-
 height, width, channels = original_image.shape[:3]
-
 
 
 
@@ -130,29 +129,15 @@ def makeBinsList(n, break_list):
     
 
 
-
-
-
-
-    
-
-
+### Create Window ###
 cv2.namedWindow("Original Image", cv2.WINDOW_NORMAL)
-
 cv2.createTrackbar('Breakpoint', "Original Image", 0, 20, lambda x:None)
-
-
-
-
-
-
-
-
 
 
 
 # Todo make this more efficient
 def showVis(top_left, top_right, bottom_left, bottom_right):
+    ''' Shows four images in a four image panel'''
     
     #create empty matrix
     vis = np.zeros((2*height, 2*width, channels), np.uint8)
@@ -168,6 +153,7 @@ def showVis(top_left, top_right, bottom_left, bottom_right):
 
 
 def makeColorList(n, method = "grey", shuffle = False):
+    ''' Creates a color scheme list to match the breakpoints '''
     
     color_list = []
     
@@ -186,11 +172,8 @@ def makeColorList(n, method = "grey", shuffle = False):
         for i in range(n):
             
             hsv = rgbToHsv([255,0,255]) # red
-
             hsv[0] += inc*i
-
             end = hsvToRgb(hsv)
-            
             
             color_list.append([end[2], end[1], end[0]])
             
@@ -227,35 +210,32 @@ def makeColorList(n, method = "grey", shuffle = False):
     return color_list
 
 
+### Initialize variables before loop ###
 method = "rainbow"
-i = 0
 compute = True
 last_break = 0
+customized_image = []
 
+
+
+### Main loop ###
 key_pressed = 69
 while key_pressed != 27 and key_pressed != ord('s'):
     key_pressed = cv2.waitKey(300)
     
     shuffle = False
     
-    
-    
-    
-    
+    ### Handle keypress ###
     if key_pressed == ord('r'):
-        
         shuffle = True
         
     elif key_pressed == ord('1'):
-        
         method = "rainbow"
         
     elif key_pressed == ord('2'):
-        
         method = "blend"
         
     elif key_pressed == ord('3'):
-        
         method = "random"
         
     elif key_pressed == ord('n'):
@@ -268,8 +248,11 @@ while key_pressed != 27 and key_pressed != ord('s'):
         if last_break - 1 >= 0:
             grayscale_break = cv2.setTrackbarPos('Breakpoint',"Original Image", last_break - 1)
     
+    if key_pressed == ord('s'):
+        saveFile(customized_image)
+        
     
-    
+    ### Retrieve trackbar info ###
     grayscale_break = cv2.getTrackbarPos('Breakpoint',"Original Image")
     number_of_splits = grayscale_break + 2
 
@@ -283,12 +266,16 @@ while key_pressed != 27 and key_pressed != ord('s'):
     
     
     
-    
+    ### Handle the computation
     if compute == True:
         
         compute = False
 
-        i += 1
+        """
+        ---------------------
+        Make the grayscale version
+        ---------------------
+        """
         breaks, values = makeBins(number_of_splits)
         breaks_3channel, values_3channel = to3Channel(breaks, values)
         bins_list = makeBinsList(number_of_splits, breaks_3channel)
@@ -306,24 +293,18 @@ while key_pressed != 27 and key_pressed != ord('s'):
             i.reColor()
         
         
-        # for i in bins_list:
-        #     i.printBounds()
-            
-    
-    
         breaks_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[0].color_image)
-    
     
         n = number_of_splits
         for i in range(1,n):
             breaks_image = cv2.bitwise_or(breaks_image, bins_list[i].color_image)
             
-            
-            
-            
-            
-            
-            
+        """
+        ---------------------
+        Make the color version
+        ---------------------
+        """
+    
         color_list = makeColorList(number_of_splits, method=method, shuffle=shuffle) 
             
           
@@ -337,31 +318,23 @@ while key_pressed != 27 and key_pressed != ord('s'):
             i.reColor()
         
     
-    
         customized_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[0].color_image)
     
         n = number_of_splits
         for i in range(1,n):
             customized_image = cv2.bitwise_or(customized_image, bins_list[i].color_image)
             
-        
+
     
-    
-    
+        """
+        ---------------------
+        Display results
+        ---------------------
+        """
         showVis(original_image, grayscale_image, breaks_image, customized_image)
         
         
-def saveFile(image_variable):
-    file_name = input("Name your image: ")
-    if ".png" not in file_name and ".jpg" not in file_name:
-        file_name += ".jpg"
-    cv2.imwrite(file_name, image_variable)
-    print(file_name, "has been saved")
-        
-        
-if key_pressed == ord('s'):
-    saveFile(customized_image)
-        
+
     
 cv2.destroyAllWindows()
 cv2.waitKey(10)

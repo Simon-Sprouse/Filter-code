@@ -44,34 +44,7 @@ def rgbToBgr(arr):
         i[2] = temp
     return arr
 
-# color1 = [255, 0, 0]
-# color2 = [30, 40, 120]
 
-
-# print(rgbToHsv(color1))
-# print(rgbToHsv(color2))
-# print()
-
-    
-# n = 11
-
-# for i in range(n):
-    
-#     hsv = rgbToHsv([255,0,0]) # red
-
-#     inc = (1/(n-1))
-#     hsv[0] += inc*i
-
-#     end = hsvToRgb(hsv)
-    
-    
-#     print(color("Hello", fore=[end[0], end[1], end[2]]))
-    
-    
-    
-    
-    
-    
     
     
 def blend(color1, color2, n): 
@@ -104,7 +77,7 @@ def blend(color1, color2, n):
         
         end = hsvToRgb(start)
         
-        print(color("This text is demonstrating the blend function!", fore=[end[0], end[1], end[2]]))
+        # print(color("This text is demonstrating the blend function!", fore=[end[0], end[1], end[2]]))
         output_list.append(end)
         
     return output_list
