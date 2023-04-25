@@ -27,7 +27,7 @@ filename_valid = False
 #         filename_valid = True
     
 ### Todo: Remove
-path = "img8.jpeg"
+path = "img9.jpeg"
 
 
     
@@ -167,7 +167,7 @@ def showVis(top_left, top_right, bottom_left, bottom_right):
 
 
 
-def makeColorList(n, method = "grey"):
+def makeColorList(n, method = "grey", shuffle = False):
     
     color_list = []
     
@@ -179,9 +179,8 @@ def makeColorList(n, method = "grey"):
             
             color_list.append([r, r, r])
         
-        return color_list
     
-    if method == "rainbow": 
+    elif method == "rainbow": 
         
         inc = (1/(n))
         for i in range(n):
@@ -195,115 +194,132 @@ def makeColorList(n, method = "grey"):
             
             color_list.append([end[2], end[1], end[0]])
             
-        return color_list
-    
-    if method == "random":
-        
-        inc = (0.2/(n-1))
-        for i in range(n):
-            
-            hsv = rgbToHsv([255,0,0]) # red
 
-            hsv[0] += inc*i
-
-            end = hsvToRgb(hsv)
-            
-            
-            color_list.append([end[2], end[1], end[0]])
-            
-            random.shuffle(color_list)
-            
-        return color_list
-        
-    if method == "blend":
+    elif method == "blend":
         
         color2 = [40, 120, 60]
         color1 = [30, 40, 70]
         color_list = blend(color1, color2, n)
         
-        color_list_bgr = rgbToBgr(color_list)
+        color_list = rgbToBgr(color_list)
         
-        return color_list_bgr
+
+
+    if shuffle == True:
+        random.shuffle(color_list)
         
-    else:
-        
-        return []
+    return color_list
 
 
-
-
+method = "rainbow"
 i = 0
+compute = True
+last_break = 10
 
 key_pressed = 69
 while key_pressed != 27:
     key_pressed = cv2.waitKey(300)
     
+    
+    
+    
     grayscale_break = cv2.getTrackbarPos('Breakpoint',"Original Image")
-    
     number_of_splits = grayscale_break + 2
-    i += 1
-    breaks, values = makeBins(number_of_splits)
-    breaks_3channel, values_3channel = to3Channel(breaks, values)
-    bins_list = makeBinsList(number_of_splits, breaks_3channel)
-    
-    grey_list = makeColorList(number_of_splits) 
-    
-    
-    for x, i in enumerate(bins_list):
-        i.setColor(grey_list[x])
-    
-    for i in bins_list:
-        i.createMask()
-        
-    for i in bins_list:
-        i.reColor()
-    
-    
-    # for i in bins_list:
-    #     i.printBounds()
-        
 
-
-    breaks_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[0].color_image)
-
-
-    n = number_of_splits
-    for i in range(1,n):
-        breaks_image = cv2.bitwise_or(breaks_image, bins_list[i].color_image)
-        
-        
-        
-        
-        
-        
-        
-    color_list = makeColorList(number_of_splits, method="rainbow") 
-        
-      
-    for x, i in enumerate(bins_list):
-        i.setColor(color_list[x])
     
-    for i in bins_list:
-        i.createMask()
+    if key_pressed != -1 or grayscale_break != last_break:
+        compute = True
         
-    for i in bins_list:
-        i.reColor()
-    
+    last_break = grayscale_break
 
-
-    customized_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[0].color_image)
-
-    n = number_of_splits
-    for i in range(1,n):
-        customized_image = cv2.bitwise_or(customized_image, bins_list[i].color_image)
-        
-    
-
-
-
-    showVis(original_image, grayscale_image, breaks_image, customized_image)
+    shuffle = False
     
     
+    
+    
+    if key_pressed == ord('r'):
+        
+        shuffle = True
+        
+    if key_pressed == ord('1'):
+        
+        method = "rainbow"
+        
+    if key_pressed == ord('2'):
+        
+        method = "blend"
+    
+    
+    
+    
+    
+    if compute == True:
+        
+        compute = False
+
+        i += 1
+        breaks, values = makeBins(number_of_splits)
+        breaks_3channel, values_3channel = to3Channel(breaks, values)
+        bins_list = makeBinsList(number_of_splits, breaks_3channel)
+        
+        grey_list = makeColorList(number_of_splits) 
+        
+        
+        for x, i in enumerate(bins_list):
+            i.setColor(grey_list[x])
+        
+        for i in bins_list:
+            i.createMask()
+            
+        for i in bins_list:
+            i.reColor()
+        
+        
+        # for i in bins_list:
+        #     i.printBounds()
+            
+    
+    
+        breaks_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[0].color_image)
+    
+    
+        n = number_of_splits
+        for i in range(1,n):
+            breaks_image = cv2.bitwise_or(breaks_image, bins_list[i].color_image)
+            
+            
+            
+            
+            
+            
+            
+        color_list = makeColorList(number_of_splits, method=method, shuffle=shuffle) 
+            
+          
+        for x, i in enumerate(bins_list):
+            i.setColor(color_list[x])
+        
+        for i in bins_list:
+            i.createMask()
+            
+        for i in bins_list:
+            i.reColor()
+        
+    
+    
+        customized_image = cv2.bitwise_or(bins_list[0].color_image, bins_list[0].color_image)
+    
+        n = number_of_splits
+        for i in range(1,n):
+            customized_image = cv2.bitwise_or(customized_image, bins_list[i].color_image)
+            
+        
+    
+    
+    
+        showVis(original_image, grayscale_image, breaks_image, customized_image)
+        
+        
     
 cv2.destroyAllWindows()
 cv2.waitKey(10)
