@@ -26,5 +26,5 @@ Here is an exmaple with 9 sub-divisions
 ![Final Img](Images/Example10.png)
 
 # Here are some final results!
-![Final Img](Images/Example8.jpg)
+![Final Img](Images/Example7.jpg)
 ![Final Img](Images/Example9.jpg)
