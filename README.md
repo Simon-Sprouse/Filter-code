@@ -34,5 +34,5 @@ The program chooses two colors at random to serve as bounds for a gradient. The 
 ![Final Img](Images/Example10.png)
 
 # Here are some final results!
-![Final Img](Images/Example7.jpg)
-![Final Img](Images/Example9.jpg)
+![Final Img](Images/Example14.jpg)
+![Final Img](Images/Example15.jpg)
