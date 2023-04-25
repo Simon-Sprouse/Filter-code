@@ -24,7 +24,8 @@ Here is an exmaple with 9 sub-divisions
 ![Final Img](Images/Example6.jpg)
 
 # The blend function is accomplished in HSV color space
-![Final Img](Images/hsv.png)
+![Final Img](Images/HsvRgb.png)
+Image credit: https://medium.com/neurosapiens/segmentation-and-classification-with-hsv-8f2406c62b39
 The program chooses two colors at random to serve as bounds for a gradient. The gradient is calculated using simple linear interpolation.
 ![Final Img](Images/Example10.png)
 
